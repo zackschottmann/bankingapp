@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'add_transaction_page.dart';
 
-
 void main() {
   runApp(BankingApp());
 }
@@ -21,8 +20,43 @@ class BankingApp extends StatelessWidget {
 }
 
 /// Author: Harsh Patel
-/// Description: Implements tab navigation for Checking, Savings, and Credit accounts.
-class AccountHomePage extends StatelessWidget {
+/// Description: Implements tab navigation for Checking, Savings, and Credit accounts,
+/// sharing state for balances and transactions across tabs.
+class AccountHomePage extends StatefulWidget {
+  @override
+  _AccountHomePageState createState() => _AccountHomePageState();
+}
+
+class _AccountHomePageState extends State<AccountHomePage> {
+  final Map<String, List<Map<String, String>>> transactions = {
+    'Chequeing': [
+      {'date': '2024-11-20', 'desc': 'Groceries', 'amount': '-\$45.00'},
+      {'date': '2024-11-18', 'desc': 'Salary', 'amount': '+\$1500.00'},
+    ],
+    'Savings': [
+      {'date': '2024-11-15', 'desc': 'Transfer to Checking', 'amount': '-\$500.00'},
+      {'date': '2024-11-10', 'desc': 'Interest Credit', 'amount': '+\$20.00'},
+    ],
+    'Credit': [
+      {'date': '2024-11-14', 'desc': 'Online Purchase', 'amount': '-\$200.00'},
+      {'date': '2024-11-11', 'desc': 'Payment Received', 'amount': '+\$400.00'},
+    ],
+  };
+
+  final Map<String, double> balances = {
+    'Chequeing': 2500.75,
+    'Savings': 8000.50,
+    'Credit': -1200.00,
+  };
+
+  // Method to add a transaction and update the balance
+  void addTransaction(String accountType, Map<String, String> transaction, double amount) {
+    setState(() {
+      transactions[accountType]!.add(transaction);
+      balances[accountType] = balances[accountType]! + amount;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -38,80 +72,49 @@ class AccountHomePage extends StatelessWidget {
             ],
           ),
         ),
-        body: const TabBarView(
+        body: TabBarView(
           children: [
             AccountPage(
               accountType: 'Chequeing',
-              initialBalance: 2500.75,
-              initialTransactions: [
-                {'date': '2024-11-20', 'desc': 'Groceries', 'amount': '-\$45.00'},
-                {'date': '2024-11-18', 'desc': 'Salary', 'amount': '+\$1500.00'},
-              ],
+              transactions: transactions['Chequeing']!,
+              balance: balances['Chequeing']!,
+              addTransaction: addTransaction,
             ),
             AccountPage(
               accountType: 'Savings',
-              initialBalance: 8000.50,
-              initialTransactions: [
-                {'date': '2024-11-15', 'desc': 'Transfer to Checking', 'amount': '-\$500.00'},
-                {'date': '2024-11-10', 'desc': 'Interest Credit', 'amount': '+\$20.00'},
-              ],
+              transactions: transactions['Savings']!,
+              balance: balances['Savings']!,
+              addTransaction: addTransaction,
             ),
             AccountPage(
               accountType: 'Credit',
-              initialBalance: -1200.00,
-              initialTransactions: [
-                {'date': '2024-11-14', 'desc': 'Online Purchase', 'amount': '-\$200.00'},
-                {'date': '2024-11-11', 'desc': 'Payment Received', 'amount': '+\$400.00'},
-              ],
+              transactions: transactions['Credit']!,
+              balance: balances['Credit']!,
+              addTransaction: addTransaction,
             ),
           ],
         ),
-        
-        floatingActionButton: FloatingActionButton(
-          onPressed: () async {
-            final result = await Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => AddTransactionPage()),
-           );
-          if (result != null) {
-            print('Transaction Added: $result');
-         }
-      },
-        child: Icon(Icons.add),
       ),
-     ),
     );
   }
 }
 
-/// Author: Harsh Patel
-/// Description: Displays the balance and transactions for a specific account type with dynamic updates using a stateful widget.
-class AccountPage extends StatefulWidget {
+/// Author: Zackary Schottmann
+/// Description: Displays the balance and transactions for a specific account type,
+/// with the ability to add new transactions and update the balance.
+class AccountPage extends StatelessWidget {
   final String accountType;
-  final double initialBalance;
-  final List<Map<String, String>> initialTransactions;
+  final double balance;
+  final List<Map<String, String>> transactions;
+  final Function(String accountType, Map<String, String> transaction, double amount) addTransaction;
 
   const AccountPage({
     Key? key,
     required this.accountType,
-    required this.initialBalance,
-    required this.initialTransactions,
+    required this.balance,
+    required this.transactions,
+    required this.addTransaction,
   }) : super(key: key);
-
-  @override
-  State<AccountPage> createState() => _AccountPageState();
-}
-
-class _AccountPageState extends State<AccountPage> {
-  late double balance;
-  late List<Map<String, String>> transactions;
-
-  @override
-  void initState() {
-    super.initState();
-    balance = widget.initialBalance;
-    transactions = List.from(widget.initialTransactions);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -123,7 +126,7 @@ class _AccountPageState extends State<AccountPage> {
           child: Column(
             children: [
               Text(
-                '${widget.accountType} Account',
+                '$accountType Account',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
@@ -163,12 +166,7 @@ class _AccountPageState extends State<AccountPage> {
             },
           ),
         ),
-
-        /// Author : Zackary Schottmann
-        /// Description: defines a button that navigates to an Add Transaction Page
-        /// collects transaction details from the user, and updates the account 
-
-         Padding(
+        Padding(
           padding: const EdgeInsets.all(16.0),
           child: ElevatedButton(
             onPressed: () async {
@@ -178,19 +176,15 @@ class _AccountPageState extends State<AccountPage> {
               );
 
               if (result != null) {
-                setState(() {
-                  final newTransaction = {
-                    'date': DateTime.now().toString().split(' ')[0],
-                    'desc': result['name'] as String,
-                    'amount': (result['amount'] > 0
-                        ? '+\$${result['amount'].toStringAsFixed(2)}'
-                        : '-\$${(result['amount'].abs()).toStringAsFixed(2)}'),
-                  };
+                final newTransaction = {
+                  'date': DateTime.now().toString().split(' ')[0],
+                  'desc': result['name'] as String,
+                  'amount': (result['amount'] > 0
+                      ? '+\$${result['amount'].toStringAsFixed(2)}'
+                      : '-\$${(result['amount'].abs()).toStringAsFixed(2)}'),
+                };
 
-                  transactions.add(newTransaction);
-
-                  balance += result['amount'];
-                });
+                addTransaction(accountType, newTransaction, result['amount']);
               }
             },
             child: Text('Add Transaction'),
