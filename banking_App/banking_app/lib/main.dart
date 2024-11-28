@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'add_transaction_page.dart';
+
 
 void main() {
   runApp(BankingApp());
@@ -64,7 +66,20 @@ class AccountHomePage extends StatelessWidget {
             ),
           ],
         ),
+        
+        floatingActionButton: FloatingActionButton(
+          onPressed: () async {
+            final result = await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => AddTransactionPage()),
+           );
+          if (result != null) {
+            print('Transaction Added: $result');
+         }
+      },
+        child: Icon(Icons.add),
       ),
+     ),
     );
   }
 }
@@ -146,6 +161,39 @@ class _AccountPageState extends State<AccountPage> {
                 ),
               );
             },
+          ),
+        ),
+
+        /// Author : Zackary Schottmann
+        /// Description: defines a button that navigates to an Add Transaction Page
+        /// collects transaction details from the user, and updates the account 
+
+         Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: ElevatedButton(
+            onPressed: () async {
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AddTransactionPage()),
+              );
+
+              if (result != null) {
+                setState(() {
+                  final newTransaction = {
+                    'date': DateTime.now().toString().split(' ')[0],
+                    'desc': result['name'] as String,
+                    'amount': (result['amount'] > 0
+                        ? '+\$${result['amount'].toStringAsFixed(2)}'
+                        : '-\$${(result['amount'].abs()).toStringAsFixed(2)}'),
+                  };
+
+                  transactions.add(newTransaction);
+
+                  balance += result['amount'];
+                });
+              }
+            },
+            child: Text('Add Transaction'),
           ),
         ),
       ],
