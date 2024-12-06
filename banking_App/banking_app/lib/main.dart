@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'add_transaction_page.dart';
+import 'interac_payment_page.dart';
 
 void main() {
   runApp(BankingApp());
@@ -110,6 +112,17 @@ class _AccountHomePageState extends State<AccountHomePage> {
       balances[account] = balances[account]! + amount;
     });
   }
+  ///Author: Harsh Patel
+  void sendInterac(String account, double amount, String recipient) {
+    setState(() {
+      balances[account] = balances[account]! - amount;
+      transactions[account]!.add({
+        'date': DateTime.now().toString().split(' ')[0],
+        'desc': 'Sent Interac to $recipient',
+        'amount': '-\$${amount.toStringAsFixed(2)}',
+      });
+    });
+  }
 
   void _showErrorDialog(BuildContext context, String title, String message) {
     showDialog(
@@ -150,6 +163,9 @@ class _AccountHomePageState extends State<AccountHomePage> {
               accountType: 'Chequeing',
               transactions: transactions['Chequeing']!,
               balance: balances['Chequeing']!,
+              balances: balances,
+              onSendInterac: (account, amount, recipient) =>
+                  sendInterac(account, amount, recipient),
               onAddTransaction: (toAccount, amount, description) =>
                   addTransaction('Chequeing', toAccount, amount, description),
               onDeposit: (amount, description) =>
@@ -159,6 +175,7 @@ class _AccountHomePageState extends State<AccountHomePage> {
               accountType: 'Savings',
               transactions: transactions['Savings']!,
               balance: balances['Savings']!,
+              balances: balances,
               onAddTransaction: (toAccount, amount, description) =>
                   addTransaction('Savings', toAccount, amount, description),
               onDeposit: (amount, description) =>
@@ -168,6 +185,7 @@ class _AccountHomePageState extends State<AccountHomePage> {
               accountType: 'Credit',
               transactions: transactions['Credit']!,
               balance: balances['Credit']!,
+              balances: balances,
               onPayCreditCard: (fromAccount, amount) =>
                   payCreditCard(fromAccount, amount),
             ),
@@ -184,7 +202,10 @@ class _AccountHomePageState extends State<AccountHomePage> {
 class AccountPage extends StatelessWidget {
   final String accountType;
   final double balance;
+  final Map<String, double> balances;
   final List<Map<String, String>> transactions;
+    final void Function(String account, double amount, String recipient)?
+      onSendInterac;
   final void Function(String toAccount, double amount, String description)?
       onAddTransaction;
   final void Function(double amount, String description)? onDeposit;
@@ -194,7 +215,9 @@ class AccountPage extends StatelessWidget {
     Key? key,
     required this.accountType,
     required this.balance,
+    required this.balances,
     required this.transactions,
+    this.onSendInterac,
     this.onAddTransaction,
     this.onDeposit,
     this.onPayCreditCard,
@@ -269,6 +292,31 @@ class AccountPage extends StatelessWidget {
                 ),
               );
             },
+          ),
+        ),
+       if (accountType != 'Credit') 
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: ElevatedButton(
+            onPressed: () async {
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => InteracPaymentPage(balances: balances),
+                ),
+              );
+
+              if (result != null && result is Map) {
+                final account = result['account'] as String;
+                final amount = result['amount'] as double;
+                final recipient = result['recipient'] as String;
+
+                if (onSendInterac != null) {
+                  onSendInterac!(account, amount, recipient);
+                }
+              }
+            },
+            child: Text('Send Interac Payment'),
           ),
         ),
 
