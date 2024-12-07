@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class InteracPaymentPage extends StatefulWidget {
   final Map<String, double> balances;
 
-  const InteracPaymentPage({Key? key, required this.balances}) : super(key: key);
+  const InteracPaymentPage({super.key, required this.balances});
 
   @override
   _InteracPaymentPageState createState() => _InteracPaymentPageState();
@@ -20,7 +20,7 @@ class _InteracPaymentPageState extends State<InteracPaymentPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Send Interac Payment'),
+        title: const Text('Send Interac Payment'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -29,7 +29,7 @@ class _InteracPaymentPageState extends State<InteracPaymentPage> {
           children: [
             DropdownButtonFormField<String>(
               value: _selectedAccount,
-              hint: Text('Select Account'),
+              hint: const Text('Select Account'),
               onChanged: (value) {
                 setState(() {
                   _selectedAccount = value;
@@ -42,24 +42,24 @@ class _InteracPaymentPageState extends State<InteracPaymentPage> {
                 );
               }).toList(),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             TextField(
               controller: _recipientController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Recipient Email',
                 border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             TextField(
               controller: _amountController,
               keyboardType: TextInputType.number,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Amount',
                 border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             // Submit button
             ElevatedButton(
               onPressed: () {
@@ -90,7 +90,7 @@ class _InteracPaymentPageState extends State<InteracPaymentPage> {
                   _showErrorDialog('Insufficient funds in the selected account.');
                 }
               },
-              child: Text('Send Payment'),
+              child: const Text('Send Payment'),
             ),
           ],
         ),
@@ -102,12 +102,12 @@ class _InteracPaymentPageState extends State<InteracPaymentPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Error'),
+        title: const Text('Error'),
         content: Text(message),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('OK'),
+            child: const Text('OK'),
           ),
         ],
       ),
