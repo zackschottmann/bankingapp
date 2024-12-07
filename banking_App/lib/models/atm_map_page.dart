@@ -1,48 +1,41 @@
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:syncfusion_flutter_maps/maps.dart';
 
-class AtmMapPage extends StatefulWidget {
-  const AtmMapPage({super.key});
-
-  @override
-  _AtmMapPageState createState() => _AtmMapPageState();
-}
-
-class _AtmMapPageState extends State<AtmMapPage> {
-  late GoogleMapController _mapController;
-
-  // Set initial camera position
-  final CameraPosition _initialCameraPosition = const CameraPosition(
-    target: LatLng(43.65107, -79.347015), // Example: Toronto, Canada
-    zoom: 12,
-  );
-
-  // List of sample ATM markers
-  final List<Marker> _atmMarkers = [
-    const Marker(
-      markerId: MarkerId('atm1'),
-      position: LatLng(43.653225, -79.383186), // Example: Toronto ATM 1
-      infoWindow: InfoWindow(title: "ATM 1", snippet: "123 Main St"),
-    ),
-    const Marker(
-      markerId: MarkerId('atm2'),
-      position: LatLng(43.65107, -79.347015), // Example: Toronto ATM 2
-      infoWindow: InfoWindow(title: "ATM 2", snippet: "456 Queen St"),
-    ),
+class ATMMapPage extends StatelessWidget {
+  final List<MapLatLng> atmLocations = [
+    MapLatLng(37.7749, -122.4194), // Example: San Francisco
+    MapLatLng(34.0522, -118.2437), // Example: Los Angeles
+    MapLatLng(40.7128, -74.0060),  // Example: New York City
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Nearby ATMs"),
+        title: Text('ATM Locations'),
       ),
-      body: GoogleMap(
-        initialCameraPosition: _initialCameraPosition,
-        markers: Set<Marker>.of(_atmMarkers),
-        onMapCreated: (GoogleMapController controller) {
-          _mapController = controller;
-        },
+      body: SfMaps(
+        layers: [
+          MapTileLayer(
+            urlTemplate:
+                'https://tile.openstreetmap.org/{z}/{x}/{y}.png', // OpenStreetMap tiles
+            initialZoomLevel: 5,
+            initialFocalLatLng: MapLatLng(37.7749, -122.4194), // Center map on a location
+            zoomPanBehavior: MapZoomPanBehavior(),
+            markerBuilder: (BuildContext context, int index) {
+              return MapMarker(
+                latitude: atmLocations[index].latitude,
+                longitude: atmLocations[index].longitude,
+                child: Icon(
+                  Icons.location_on,
+                  color: Colors.red,
+                  size: 30,
+                ),
+              );
+            },
+            initialMarkersCount: atmLocations.length,
+          ),
+        ],
       ),
     );
   }
