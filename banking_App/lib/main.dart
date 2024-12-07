@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'add_transaction_page.dart';
 import 'interac_payment_page.dart';
+import 'atm_map_page.dart';
 
 void main() {
-  runApp(BankingApp());
+  runApp(const BankingApp());
 }
 
 /// Author: Harsh Patel
 /// Description: Entry point for the banking app with tab navigation and account details.
 class BankingApp extends StatelessWidget {
+  const BankingApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Banking App',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: AccountHomePage(),
+      home: const AccountHomePage(),
     );
   }
 }
@@ -24,6 +26,8 @@ class BankingApp extends StatelessWidget {
 /// Author: Harsh Patel
 /// Description: Implements tab navigation for Chequeing, Savings, and Credit accounts.
 class AccountHomePage extends StatefulWidget {
+  const AccountHomePage({super.key});
+
   @override
   _AccountHomePageState createState() => _AccountHomePageState();
 }
@@ -134,7 +138,7 @@ class _AccountHomePageState extends State<AccountHomePage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text('OK'),
+              child: const Text('OK'),
             ),
           ],
         );
@@ -148,7 +152,7 @@ class _AccountHomePageState extends State<AccountHomePage> {
       length: 3, 
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Banking App'),
+          title: const Text('Banking App'),
           bottom: const TabBar(
             tabs: [
               Tab(icon: Icon(Icons.account_balance_wallet), text: 'Chequeing'),
@@ -156,6 +160,18 @@ class _AccountHomePageState extends State<AccountHomePage> {
               Tab(icon: Icon(Icons.credit_card), text: 'Credit'),
             ],
           ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.map),
+              onPressed: () {
+                 Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ATMMapPage()),
+                );
+               },
+               tooltip: 'View Nearby ATMs',
+             ),
+          ],
         ),
         body: TabBarView(
           children: [
@@ -212,7 +228,7 @@ class AccountPage extends StatelessWidget {
   final void Function(String fromAccount, double amount)? onPayCreditCard;
 
   const AccountPage({
-    Key? key,
+    super.key,
     required this.accountType,
     required this.balance,
     required this.balances,
@@ -221,7 +237,7 @@ class AccountPage extends StatelessWidget {
     this.onAddTransaction,
     this.onDeposit,
     this.onPayCreditCard,
-  }) : super(key: key);
+  });
 
   void _showErrorDialog(BuildContext context, String title, String message) {
     showDialog(
@@ -233,7 +249,7 @@ class AccountPage extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text('OK'),
+              child: const Text('OK'),
             ),
           ],
         );
@@ -254,7 +270,7 @@ class AccountPage extends StatelessWidget {
             children: [
               Text(
                 '$accountType Account',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               Text(
@@ -316,7 +332,7 @@ class AccountPage extends StatelessWidget {
                 }
               }
             },
-            child: Text('Send Interac Payment'),
+            child: const Text('Send Interac Payment'),
           ),
         ),
 
@@ -327,7 +343,7 @@ class AccountPage extends StatelessWidget {
               onPressed: () async {
                 final result = await Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => AddTransactionPage()),
+                  MaterialPageRoute(builder: (context) => const AddTransactionPage()),
                 );
 
                 if (result != null &&
@@ -364,7 +380,7 @@ class AccountPage extends StatelessWidget {
                   );
                 }
               },
-              child: Text('Transfer funds'),
+              child: const Text('Transfer funds'),
             ),
           ),
         if (onDeposit != null)
@@ -389,7 +405,7 @@ class AccountPage extends StatelessWidget {
                   );
                 }
               },
-              child: Text('Deposit'),
+              child: const Text('Deposit'),
             ),
           ),
         if (onPayCreditCard != null)
@@ -412,7 +428,7 @@ class AccountPage extends StatelessWidget {
                   }
                 }
               },
-              child: Text('Pay Credit Card'),
+              child: const Text('Pay Credit Card'),
             ),
           ),
       ],
@@ -430,19 +446,19 @@ class AccountPage extends StatelessWidget {
           content: TextField(
             controller: controller,
             keyboardType: TextInputType.number,
-            decoration: InputDecoration(hintText: 'Enter amount'),
+            decoration: const InputDecoration(hintText: 'Enter amount'),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, null),
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
                 final amount = double.tryParse(controller.text);
                 Navigator.pop(context, amount);
               },
-              child: Text('OK'),
+              child: const Text('OK'),
             ),
           ],
         );
@@ -460,16 +476,16 @@ class AccountPage extends StatelessWidget {
           title: Text(title),
           content: TextField(
             controller: controller,
-            decoration: InputDecoration(hintText: 'Enter description'),
+            decoration: const InputDecoration(hintText: 'Enter description'),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, null),
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () => Navigator.pop(context, controller.text.trim()),
-              child: Text('OK'),
+              child: const Text('OK'),
             ),
           ],
         );
@@ -483,7 +499,7 @@ class AccountPage extends StatelessWidget {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Select Account'),
+          title: const Text('Select Account'),
           content: StatefulBuilder(
             builder: (context, setState) {
               return DropdownButton<String>(
@@ -503,11 +519,11 @@ class AccountPage extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, null),
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () => Navigator.pop(context, selectedAccount),
-              child: Text('OK'),
+              child: const Text('OK'),
             ),
           ],
         );

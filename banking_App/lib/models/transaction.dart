@@ -1,6 +1,7 @@
 /// Author: Zackary Schottmann
 /// Description: Defines a Transaction model with properties such as 
 /// name, amount, type, description, and date for managing transaction data.
+library;
 
 class Transaction {
   final String fromAccount;

@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 /// amount, and description.
 
 class AddTransactionPage extends StatefulWidget {
+  const AddTransactionPage({super.key});
+
   @override
   _AddTransactionPageState createState() => _AddTransactionPageState();
 }
