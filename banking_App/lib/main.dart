@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 import 'add_transaction_page.dart';
 import 'interac_payment_page.dart';
 import 'atm_map_page.dart';
+import 'login_page.dart';
 
 void main() {
   runApp(const BankingApp());
@@ -16,9 +19,32 @@ class BankingApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Banking App',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: const AccountHomePage(),
+      title: 'Welcome to Banking App',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        scaffoldBackgroundColor: Colors.blue.shade50,
+        appBarTheme: AppBarTheme(
+          color: Colors.blue.shade700,
+          iconTheme: const IconThemeData(color: Colors.white),          
+          titleTextStyle: const TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),      ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.blue.shade700,
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        ),
+      ),
+      routes: {
+        '/': (context) => LoginPage(), 
+        '/home': (context) => AccountHomePage(), 
+      },
     );
   }
 }
@@ -33,17 +59,61 @@ class AccountHomePage extends StatefulWidget {
 }
 
 class _AccountHomePageState extends State<AccountHomePage> {
-  final Map<String, List<Map<String, String>>> transactions = {
+  Map<String, List<Map<String, String>>> transactions = {
     'Chequeing': [],
     'Savings': [],
     'Credit': [],
   };
 
-  final Map<String, double> balances = {
+  Map<String, double> balances = {
     'Chequeing': 1000.0,
     'Savings': 5000.0,
-    'Credit': -1200.0,
+    'Credit': -120.0,
   };
+
+  @override
+  void initState() {
+    super.initState();
+    loadTransactions();
+  }
+  void loadTransactions() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      balances['Chequeing'] = prefs.getDouble('Chequeing') ?? 1000.0;
+      balances['Savings'] = prefs.getDouble('Savings') ?? 5000.0;
+      balances['Credit'] = prefs.getDouble('Credit') ?? -1200.0;
+
+      final ChequeingTransactions = prefs.getString('ChequeingTransactions');
+      final SavingsTransactions = prefs.getString('SavingsTransactions');
+      final CreditTransactions = prefs.getString('CreditTransactions');
+
+      if (ChequeingTransactions != null) {
+        transactions['Chequeing'] =
+            List<Map<String, String>>.from(
+                jsonDecode(ChequeingTransactions));
+      }
+      if (SavingsTransactions != null) {
+        transactions['Savings'] =
+            List<Map<String, String>>.from(
+                jsonDecode(SavingsTransactions));
+      }
+      if (CreditTransactions != null) {
+        transactions['Credit'] =
+            List<Map<String, String>>.from(
+                jsonDecode(CreditTransactions));
+      }
+    });
+  }
+  Future<void> _saveData() async{
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setDouble('Chequeing', balances['Chequeing']!);
+    prefs.setDouble('Savings', balances['Savings']!);
+    prefs.setDouble('Credit', balances['Credit']!);
+
+    prefs.setString('ChequeingTransactions', jsonEncode(transactions['Chequeing']));
+    prefs.setString('SavingsTransactions', jsonEncode(transactions['Savings']));
+    prefs.setString('CreditTransactions', jsonEncode(transactions['Credit']));
+  }
 
   /// Author: Zackary Schottmann
   /// Description: Handles adding transactions by transferring money
@@ -65,6 +135,7 @@ class _AccountHomePageState extends State<AccountHomePage> {
           'amount': '+\$${amount.toStringAsFixed(2)}',
         });
         balances[toAccount] = balances[toAccount]! + amount;
+        _saveData();
       });
     } else {
       _showErrorDialog(
@@ -94,6 +165,7 @@ class _AccountHomePageState extends State<AccountHomePage> {
           'amount': '+\$${amount.toStringAsFixed(2)}',
         });
         balances['Credit'] = balances['Credit']! + amount;
+        _saveData();
       });
     } else {
       _showErrorDialog(
@@ -114,7 +186,9 @@ class _AccountHomePageState extends State<AccountHomePage> {
         'amount': '+\$${amount.toStringAsFixed(2)}',
       });
       balances[account] = balances[account]! + amount;
+      _saveData();
     });
+
   }
   ///Author: Harsh Patel
   void sendInterac(String account, double amount, String recipient) {
@@ -125,6 +199,7 @@ class _AccountHomePageState extends State<AccountHomePage> {
         'desc': 'Sent Interac to $recipient',
         'amount': '-\$${amount.toStringAsFixed(2)}',
       });
+      _saveData();
     });
   }
 
@@ -152,12 +227,13 @@ class _AccountHomePageState extends State<AccountHomePage> {
       length: 3, 
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Banking App'),
+          title: const Text('Welcome to your account!'),
           bottom: const TabBar(
+            labelColor: Color(0xFF42A5F5),
             tabs: [
-              Tab(icon: Icon(Icons.account_balance_wallet), text: 'Chequeing'),
-              Tab(icon: Icon(Icons.savings), text: 'Savings'),
-              Tab(icon: Icon(Icons.credit_card), text: 'Credit'),
+              Tab(icon: Icon(Icons.account_balance_wallet,color: Color(0xFF42A5F5)), text: 'Chequeing'),
+              Tab(icon: Icon(Icons.savings,color: Color(0xFF42A5F5)), text: 'Savings'),
+              Tab(icon: Icon(Icons.credit_card,color: Color(0xFF42A5F5)), text: 'Credit'),
             ],
           ),
           actions: [
@@ -264,9 +340,21 @@ class AccountPage extends StatelessWidget {
     return Column(
       children: [
         Container(
-          padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 12.0),
-          color: Colors.blue.shade50,
+          margin: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.shade300,
+                blurRadius: 6,
+                offset: const Offset(0, 4),
+                ),
+            ]
+          ),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 '$accountType Account',
@@ -294,6 +382,11 @@ class AccountPage extends StatelessWidget {
               return Card(
                 margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 child: ListTile(
+                  leading: Icon(transaction['amount']!.startsWith('-')
+                        ? Icons.arrow_downward
+                        : Icons.arrow_upward,
+                    color: transaction['amount']!.startsWith('-') ? Colors.red : Colors.green,
+                  ),
                   title: Text(transaction['desc']!),
                   subtitle: Text(transaction['date']!),
                   trailing: Text(
