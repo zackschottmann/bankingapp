@@ -10,6 +10,8 @@ dependencies:
   flutter:
     sdk: flutter
   google_maps_flutter: ^2.2.1
+  shared_preferences: ^2.2.0
+  email_validator: ^2.0.1
 
 
 dev_dependencies:

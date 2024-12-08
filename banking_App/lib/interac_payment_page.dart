@@ -1,6 +1,8 @@
 //Author : Harsh Patel 
 //Description: Interac payment page for sending money to another user which sends info back to main.dart and update the balances.
 import 'package:flutter/material.dart';
+import 'package:email_validator/email_validator.dart';
+
 
 class InteracPaymentPage extends StatefulWidget {
   final Map<String, double> balances;
@@ -35,7 +37,9 @@ class _InteracPaymentPageState extends State<InteracPaymentPage> {
                   _selectedAccount = value;
                 });
               },
-              items: widget.balances.keys.map((account) {
+              items: widget.balances.keys
+              .where((account) => account != 'Credit')
+              .map((account) {
                 return DropdownMenuItem<String>(
                   value: account,
                   child: Text(account),
@@ -67,7 +71,7 @@ class _InteracPaymentPageState extends State<InteracPaymentPage> {
                   _showErrorDialog('Please select an account.');
                   return;
                 }
-                if (_recipientController.text.isEmpty) {
+                if (!EmailValidator.validate(_recipientController.text) || _recipientController.text.isEmpty) {
                   _showErrorDialog('Please enter a recipient email.');
                   return;
                 }
