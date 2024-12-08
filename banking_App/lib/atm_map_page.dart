@@ -1,3 +1,7 @@
+/// Author: Zackary Schottmann
+/// Description: A class thatvcreates a Google Maps-based application page
+/// that displays ATM locations in and around Waterloo, Ontario. 
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
