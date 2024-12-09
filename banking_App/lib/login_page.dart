@@ -1,4 +1,5 @@
-//Harsh Patel
+///Author: Harsh Patel
+///Description: This class is used to login to the app
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatefulWidget {
@@ -43,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
                   children: [
                     SizedBox(height: 10),
                     Text(
-                      'Welcome Back!',
+                      'Welcome to Bank of Conestoga',
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,

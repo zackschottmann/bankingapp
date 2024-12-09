@@ -19,7 +19,7 @@ class BankingApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Welcome to Banking App',
+      title: 'Conestoga Bank',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         scaffoldBackgroundColor: Colors.blue.shade50,
@@ -70,7 +70,8 @@ class _AccountHomePageState extends State<AccountHomePage> {
     'Savings': 5000.0,
     'Credit': -120.0,
   };
-
+//Author : Harsh Patel
+  /// Description: Loads transactions from SharedPreferences.
   @override
   void initState() {
     super.initState();
@@ -191,6 +192,7 @@ class _AccountHomePageState extends State<AccountHomePage> {
 
   }
   ///Author: Harsh Patel
+  /// Description: Handles withdrawing money from a specified account with a description.
   void sendInterac(String account, double amount, String recipient) {
     setState(() {
       balances[account] = balances[account]! - amount;
@@ -202,7 +204,8 @@ class _AccountHomePageState extends State<AccountHomePage> {
       _saveData();
     });
   }
-
+//Author: Zackary Schottmann
+///Description: Error dialog to show when an error occurs
   void _showErrorDialog(BuildContext context, String title, String message) {
     showDialog(
       context: context,
@@ -527,7 +530,8 @@ class AccountPage extends StatelessWidget {
       ],
     );
   }
-
+  ///Author : Zackary
+///Description: This function is used to get the amount from the user
   Future<double?> _getAmountFromUser(
       BuildContext context, String title) async {
     final controller = TextEditingController();
