@@ -47,5 +47,9 @@
 	<true/>
 	<key>GMSApiKey</key>
 	<string>AIzaSyC3QgZjzTiBkJElaNQGd_NmPmxMF-Ownac</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>We need your location to display ATMs nearby.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>We need your location to display ATMs nearby.</string>
 </dict>
 </plist>

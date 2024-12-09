@@ -8,10 +8,10 @@ class AddTransactionPage extends StatefulWidget {
   const AddTransactionPage({super.key});
 
   @override
-  _AddTransactionPageState createState() => _AddTransactionPageState();
+  AddTransactionPageState createState() => AddTransactionPageState();
 }
 
-class _AddTransactionPageState extends State<AddTransactionPage> {
+class AddTransactionPageState extends State<AddTransactionPage> {
   String? _toAccount; 
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();

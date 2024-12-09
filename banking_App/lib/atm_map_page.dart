@@ -10,10 +10,10 @@ class ATMMapPage extends StatefulWidget {
   const ATMMapPage({super.key});
 
   @override
-  _ATMMapPageState createState() => _ATMMapPageState();
+  ATMMapPageState createState() => ATMMapPageState();
 }
 
-class _ATMMapPageState extends State<ATMMapPage> {
+class ATMMapPageState extends State<ATMMapPage> {
   late GoogleMapController _mapController;
 
   // List of ATM locations around Waterloo, Ontario
@@ -36,8 +36,11 @@ class _ATMMapPageState extends State<ATMMapPage> {
   @override
   void initState() {
     super.initState();
+    _initalizeMarkers();
+  }
 
     // Add markers for each ATM location
+    void _initalizeMarkers(){
     for (int i = 0; i < atmLocations.length; i++) {
       _markers.add(
         Marker(
@@ -65,10 +68,19 @@ class _ATMMapPageState extends State<ATMMapPage> {
           zoom: 13, // Zoom level for city view
         ),
         markers: _markers,
+        myLocationEnabled: true,
+        zoomControlsEnabled: true,
         onMapCreated: (GoogleMapController controller) {
           _mapController = controller;
         },
       ),
     );
   }
+
+  @override
+  void dispose(){
+    _mapController.dispose();
+    super.dispose();
+  }
 }
+
