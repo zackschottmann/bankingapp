@@ -1,8 +1,7 @@
-import 'package:flutter/material.dart';
-
 /// Author: Zackary Schottmann
 /// Description: Provides a form to add a transaction, specifying the target account,
 /// amount, and description.
+import 'package:flutter/material.dart';
 
 class AddTransactionPage extends StatefulWidget {
   const AddTransactionPage({super.key});

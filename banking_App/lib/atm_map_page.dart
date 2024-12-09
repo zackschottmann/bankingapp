@@ -30,7 +30,6 @@ class ATMMapPageState extends State<ATMMapPage> {
     const LatLng(43.4562, -80.5075), // Waterloo Public Library
   ];
 
-  // List of markers for the ATMs
   final Set<Marker> _markers = {};
 
   @override
@@ -39,7 +38,6 @@ class ATMMapPageState extends State<ATMMapPage> {
     _initalizeMarkers();
   }
 
-    // Add markers for each ATM location
     void _initalizeMarkers(){
     for (int i = 0; i < atmLocations.length; i++) {
       _markers.add(
