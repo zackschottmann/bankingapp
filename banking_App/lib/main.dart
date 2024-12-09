@@ -43,7 +43,7 @@ class BankingApp extends StatelessWidget {
       ),
       routes: {
         '/': (context) => LoginPage(), 
-        '/home': (context) => AccountHomePage(), 
+        '/home': (context) => const AccountHomePage(), 
       },
     );
   }
@@ -242,7 +242,7 @@ class _AccountHomePageState extends State<AccountHomePage> {
               onPressed: () {
                  Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => ATMMapPage()),
+                  MaterialPageRoute(builder: (context) => const ATMMapPage()),
                 );
                },
                tooltip: 'View Nearby ATMs',

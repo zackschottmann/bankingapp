@@ -11,10 +11,10 @@ buildscript {
 }
 
 plugins {
-    id "com.android.application"
+    id "com.android.application" version "8.1.1"
     id "kotlin-android"
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
-    id "dev.flutter.flutter-gradle-plugin"
+    id "dev.flutter.flutter-gradle-plugin" version "1.0.0"
 }
 
 android {
